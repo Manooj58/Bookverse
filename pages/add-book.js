@@ -6,14 +6,21 @@ import { useTheme } from 'next-themes';
 
 import { Button, Input } from '../components';
 import images from '../assets';
+import { BookContext } from '../context/BookContext';
 
 const AddBook = () => {
   const [fileUrl, setFileUrl] = useState(null);
   const [formInput, setFormInput] = useState({ price: '', name: '', description: '' });
   const { theme } = useTheme();
-  const onDrop = useCallback(() => {
+  const {uploadToIPFS} = useContext(BookContext);
+
+  const onDrop = useCallback(async (acceptedFile) => {
     // upload image to the blockchain (ipfs)
+    const url = await uploadToIPFS(acceptedFile[0]);
+    console.log(url);
+    setFileUrl(url);
   }, []);
+  
   const { getRootProps, getInputProps, isDragActive, isDragAccept, isDragReject } = useDropzone({
     onDrop,
     accept: 'image/*',
