@@ -4,6 +4,7 @@ import { useTheme } from 'next-themes';
 import Image from 'next/image';
 import Link from 'next/link';
 
+import { BookContext } from '../context/BookContext';
 import images from '../assets';
 import Button from './Button';
 
@@ -33,10 +34,11 @@ const MenuItems = ({ isMobile, active, setActive }) => {
 };
 
 const ButtonGroup = ({ setActive, router }) => {
-  const hasConnected = true;
-  return hasConnected ? (
+  const {connectWallet,currentAccount} = useContext(BookContext);
+  
+  return currentAccount ? (
     <Button btnName="Create" classStyles="mx-2 rounded-xl" handleClick={() => { setActive(''); router.push('/add-book'); }} />
-  ) : (<Button btnName="Connect" classStyles="mx-2 rounded-xl" handleClick={() => {}} />);
+  ) : (<Button btnName="Connect" classStyles="mx-2 rounded-xl" handleClick={()=>{connectWallet();}} />);
 };
 
 const Navbar = () => {
