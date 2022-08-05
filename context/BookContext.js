@@ -81,7 +81,33 @@ export const BookProvider = ({ children }) => {
     console.log(contract);
   };
 
+  const fetchBooks = async () => {
+    const provider = new ethers.providers.JsonRpcProvider();
+    const contract = fetchContract(provider);
+
+    const data = await contract.fetchMarketItems();
+    const items = await Promise.all(data.map(async ({ tokenId, seller, owner, price: unformattedPrice }) => {
+      const tokenURI = await contract.tokenURI(tokenId);
+      const response = await axios.get(tokenURI);
+      const { data: { image, name, description } } = await axios.get(tokenURI);
+      const price = ethers.utils.formatUnits(unformattedPrice.toString(), 'ether');
+
+      return {
+        price,
+        tokenId: tokenId.toNumber(),
+        seller,
+        owner,
+        image,
+        name,
+        description,
+        tokenURI,
+      };
+    }));
+
+    return items;
+  };
+
   return (
-    <BookContext.Provider value={{ currency, connectWallet, currentAccount, uploadToIPFS, createBook }}>{children}</BookContext.Provider>
+    <BookContext.Provider value={{ currency, connectWallet, currentAccount, uploadToIPFS, createBook, fetchBooks }}>{children}</BookContext.Provider>
   );
 };

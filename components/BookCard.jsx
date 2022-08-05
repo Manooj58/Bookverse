@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useContext } from "react";
 import { BookContext } from "../context/BookContext";
 import images from "../assets";
+import { shortenAddress } from "../../utils/shortenAddress";
 
 const BookCard = ({ book }) => {
   const { currency } = useContext(BookContext);
@@ -28,7 +29,7 @@ const BookCard = ({ book }) => {
               {book.price} <span className="normal">{currency}</span>
             </p>
             <p className="font-poppins dark:text-white text-book-black-1 font-semibold text-xs minlg:text-lg">
-              {book.seller}
+              {book.seller.length > 10 ? shortenAddress(book.seller) : book.seller}
             </p>
           </div>
         </div>
