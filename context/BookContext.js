@@ -9,6 +9,8 @@ export const BookContext = React.createContext();
 
 const client = ipfsHttpClient('https://ipfs.infura.io:5001/api/v0');
 
+const fetchContract = (signerOrProvider) => new ethers.Contract(MarketAddress, MarketAddressABI, signerOrProvider);
+
 export const BookProvider = ({ children }) => {
   const currency = "ETH";
   const [currentAccount, setcurrentAccount] = useState(""); // address of currently connected account
@@ -49,7 +51,37 @@ export const BookProvider = ({ children }) => {
     }
   };
 
+  const createBook = async (formInput, fileUrl, router) => {
+    const { name, description, price } = formInput;
+    if (!name || !description || !price || !fileUrl) return;
+
+    const data = JSON.stringify({ name, description, image: fileUrl });
+    try {
+      // upload entirity of data to ipfs
+      const added = await client.add(data);
+      const url = `https://ipfs.infura.io/ipfs/${added.path}`;
+      await createSale(url, price);
+      router.push('/');
+    } catch (error) {
+      console.log('Error uploading file to IPFS.', error);
+    }
+  };
+
+  const createSale = async (url, formInputPrice, isReselling, id) => {
+    const web3Modal = new Web3Modal();
+    const connection = await web3Modal.connect();
+    const provider = new ethers.providers.Web3Provider(connection);
+    const signer = provider.getSigner();
+
+    const price = ethers.utils.parseUnits(formInputPrice, 'ether');
+    const contract = fetchContract(signer);
+    const listingPrice = await contract.getListingPrice();
+    const transactions = await contract.createToken(url, price, { value: listingPrice.toString() });
+    await transactions.wait();
+    console.log(contract);
+  };
+
   return (
-    <BookContext.Provider value={{ currency, connectWallet, currentAccount, uploadToIPFS }}>{children}</BookContext.Provider>
+    <BookContext.Provider value={{ currency, connectWallet, currentAccount, uploadToIPFS, createBook }}>{children}</BookContext.Provider>
   );
 };
