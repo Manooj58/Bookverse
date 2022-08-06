@@ -28,6 +28,8 @@ import creator10 from './creator10.jpg';
 import left from './left.png';
 import right from './right.png';
 import loader from './loader.gif';
+import search from './Search.png';
+import arrow from './arrow.png';
 
 export default {
   logoMain,
@@ -59,5 +61,7 @@ export default {
   creator10,
   left,
   right,
-  loader
+  loader,
+  search,
+  arrow
 };
