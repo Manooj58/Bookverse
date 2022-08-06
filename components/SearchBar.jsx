@@ -21,7 +21,7 @@ const SearchBar = ({ activeSelect, setActiveSelect, handleSearch, clearSearch })
     if (search) {
       handleSearch(search);
     } else {
-    //   clearSearch();
+      clearSearch();
     }
   }, [search]);
 

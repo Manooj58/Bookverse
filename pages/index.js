@@ -2,7 +2,7 @@ import { useState, useEffect, useRef,useContext } from 'react';
 import Image from 'next/image';
 import { useTheme } from 'next-themes';
 import images from '../assets';
-import { Banner, BookCard, AuthorCard } from '../components';
+import { Banner, BookCard, AuthorCard, SearchBar } from '../components';
 import { makeId } from '../utils/makeId';
 import { BookContext } from '../context/BookContext';
 import { getCreators } from '../utils/getTopCreators';
@@ -10,12 +10,14 @@ import { shortenAddress } from '../utils/shortenAddress';
 
 const Home = () => {
   const [hideButtons, setHideButtons] = useState(false);
-  const {fetchBooks} = useContext(BookContext);
+  const {fetchBooks, fetchMyBooksOrListedBooks, currentAccount} = useContext(BookContext);
   const theme = useTheme();
   const [books,setBooks] = useState([]);
   const [booksCopy,setBooksCopy] = useState([]);
   const parentRef = useRef(null);
   const scrollRef = useRef(null);
+  const [activeSelect, setActiveSelect] = useState('Recently added');
+  
   useEffect(() => {
     fetchBooks()
       .then((items) => {
@@ -55,6 +57,41 @@ const Home = () => {
 
   const topCreators = getCreators(booksCopy);
 
+  useEffect(() => {
+    const sortedBooks = [...books];
+
+    switch (activeSelect) {
+      case 'Price (low to high)':
+        setBooks(sortedBooks.sort((a, b) => a.price - b.price));
+        break;
+      case 'Price (high to low)':
+        setBooks(sortedBooks.sort((a, b) => b.price - a.price));
+        break;
+      case 'Recently added':
+        setBooks(sortedBooks.sort((a, b) => b.tokenId - a.tokenId));
+        break;
+      default:
+        setBooks(books);
+        break;
+    }
+  }, [activeSelect]);
+
+  const onHandleSearch = (value) => {
+    const filteredBooks = books.filter(({ name }) => name.toLowerCase().includes(value.toLowerCase()));
+
+    if (filteredBooks.length) {
+      setBooks(filteredBooks);
+    } else {
+      setBooks(booksCopy);
+    }
+  };
+
+  const onClearSearch = () => {
+    if (books.length && booksCopy.length) {
+      setBooks(booksCopy);
+    }
+  };
+
   return(
     <div className="flex justify-center sm:px-4 p-12">
     <div className="w-full minmd:w-4/5">
@@ -91,7 +128,7 @@ const Home = () => {
         </div>
         <div className="flexBetween mx-4 xs:mx-0 minlg:mx-8 sm:flex-col sm:items-start">
           <h1 className="font-poppins dark:text-white text-book-black-1 text-2xl minlg:text-4xl font-semibold sm:mb-4 flex-1">Best Offer</h1>
-          <div>SearchBar</div>
+          <SearchBar activeSelect={activeSelect} setActiveSelect={setActiveSelect} handleSearch={onHandleSearch} clearSearch={onClearSearch} />
         </div>
         <div className="mt-3 w-full flex flex-wrap justify-start md:justify-center">
           {books.map((book) => <BookCard key={book.tokenId} book={book} />)};
