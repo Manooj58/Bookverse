@@ -106,8 +106,37 @@ export const BookProvider = ({ children }) => {
 
     return items;
   };
+  
+  const fetchMyBooksOrListedBooks = async (type) => {
+    const web3Modal = new Web3Modal();
+    const connection = await web3Modal.connect();
+    const provider = new ethers.providers.Web3Provider(connection);
+    const signer = provider.getSigner();
+
+    const contract = fetchContract(signer);
+    
+    const data = type === 'fetchItemsListed' ? await contract.fetchItemsListed() : await contract.fetchMyBooks();
+
+    const items = await Promise.all(data.map(async ({ tokenId, seller, owner, price: unformattedPrice }) => {
+      const tokenURI = await contract.tokenURI(tokenId);
+      const { data: { image, name, description } } = await axios.get(tokenURI);
+      const price = ethers.utils.formatUnits(unformattedPrice.toString(), 'ether');
+
+      return {
+        price,
+        tokenId: tokenId.toNumber(),
+        seller,
+        owner,
+        image,
+        name,
+        description,
+        tokenURI,
+      };
+    }));
+    return items;
+  };
 
   return (
-    <BookContext.Provider value={{ currency, connectWallet, currentAccount, uploadToIPFS, createBook, fetchBooks }}>{children}</BookContext.Provider>
+    <BookContext.Provider value={{ currency, connectWallet, currentAccount, uploadToIPFS, createBook, fetchBooks, fetchMyBooksOrListedBooks }}>{children}</BookContext.Provider>
   );
 };

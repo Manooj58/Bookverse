@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useContext } from "react";
 import { BookContext } from "../context/BookContext";
 import images from "../assets";
-import { shortenAddress } from "../../utils/shortenAddress";
+import { shortenAddress } from "../utils/shortenAddress";
 
 const BookCard = ({ book }) => {
   const { currency } = useContext(BookContext);

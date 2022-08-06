@@ -14,7 +14,7 @@ const MenuItems = ({ isMobile, active, setActive }) => {
       case 0:
         return '/';
       case 1:
-        return '/added-books';
+        return '/listed-books';
       case 2:
         return '/my-books';
       default:
