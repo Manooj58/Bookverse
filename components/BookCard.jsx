@@ -10,7 +10,7 @@ const BookCard = ({ book }) => {
   const { currency } = useContext(BookContext);
 
   return (
-    <Link href={{ pathname: "/book-details", query: { book } }}>
+    <Link href={{ pathname: "/book-details", query: book }}>
       <div className="flex-1 min-w-215 max-w-max xs:max-w-none sm:w-full sm:min-w-155 minmd:min-w-256 minlg:min-w-237 dark:bg-book-black-3 bg-white rounded-2xl p-4 m-4 minlg:m-8 sm:my-2 sm:mx-2 cursor-pointer shadow-md">
         <div className="relative w-full h-52 sm:h-26 xs:h-56 mind:h-60 minlg:h-300 rounded-2xl overflow-hidden">
           <Image

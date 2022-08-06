@@ -7,4 +7,4 @@ import AuthorCard from './AuthorCard';
 import Input from './Input';
 import Loader from './Loader';
 
-export { Navbar, Footer, Button , Banner, BookCard, AuthorCard, Loader};
+export { Navbar, Footer, Button , Banner, BookCard, AuthorCard,Input, Loader};
