@@ -5,18 +5,22 @@ import images from '../assets';
 import { Banner, BookCard, AuthorCard } from '../components';
 import { makeId } from '../utils/makeId';
 import { BookContext } from '../context/BookContext';
+import { getCreators } from '../utils/getTopCreators';
+import { shortenAddress } from '../utils/shortenAddress';
 
 const Home = () => {
   const [hideButtons, setHideButtons] = useState(false);
   const {fetchBooks} = useContext(BookContext);
   const theme = useTheme();
   const [books,setBooks] = useState([]);
+  const [booksCopy,setBooksCopy] = useState([]);
   const parentRef = useRef(null);
   const scrollRef = useRef(null);
   useEffect(() => {
     fetchBooks()
       .then((items) => {
         setBooks(items);
+        setBooksCopy(items);
         console.log(items);
       });
   }, []);
@@ -49,6 +53,8 @@ const Home = () => {
     };
   });
 
+  const topCreators = getCreators(booksCopy);
+
   return(
     <div className="flex justify-center sm:px-4 p-12">
     <div className="w-full minmd:w-4/5">
@@ -59,9 +65,18 @@ const Home = () => {
         </h1>
         <div className="relative flex-1 max-w-full flex mt-3" ref={parentRef}>
           <div className="flex flex-row w-max overflow-x-scroll no-scrollbar select-none" ref={scrollRef}>
-            {[3, 4, 5, 6, 7, 8, 9, 10].map((i) => (
+            {/* {[3, 4, 5, 6, 7, 8, 9, 10].map((i) => (
               <AuthorCard key={`creator-${i}`} rank={i} creatorImage={images[`creator${i}`]} creatorName={`0x${makeId(3)}...${makeId(4)}`} creatorEths={10 - i * 0.5} />
-            ))}
+            ))} */}
+            {topCreators.map((creator, i) => (
+                <AuthorCard
+                  key={creator.seller}
+                  rank={i + 1}
+                  creatorImage={images[`creator${i + 1}`]}
+                  creatorName={shortenAddress(creator.seller)}
+                  creatorEths={creator.sum}
+                />
+              ))}
             {!hideButtons && (
             <>
               <div onClick={() => { handleScroll('left'); }} className="absolute w-8 h-8 minlg:w-12 minlg:h-12 top-45 cursor-pointer left-0">
