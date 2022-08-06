@@ -6,7 +6,7 @@ import { BookContext } from "../context/BookContext";
 import images from "../assets";
 import { shortenAddress } from "../utils/shortenAddress";
 
-const BookCard = ({ book }) => {
+const BookCard = ({ book, onProfilePage }) => {
   const { currency } = useContext(BookContext);
 
   return (
@@ -29,7 +29,7 @@ const BookCard = ({ book }) => {
               {book.price} <span className="normal">{currency}</span>
             </p>
             <p className="font-poppins dark:text-white text-book-black-1 font-semibold text-xs minlg:text-lg">
-              {book.seller.length > 10 ? shortenAddress(book.seller) : book.seller}
+              {shortenAddress(onProfilePage ? book.owner : book.seller )}
             </p>
           </div>
         </div>

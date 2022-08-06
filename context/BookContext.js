@@ -136,7 +136,22 @@ export const BookProvider = ({ children }) => {
     return items;
   };
 
+  const buyBook = async (book) => {
+    const web3modal = new Web3Modal();
+    const connection = await web3modal.connect();
+    const provider = new ethers.providers.Web3Provider(connection);
+    const signer = provider.getSigner();
+
+    const contract = fetchContract(signer);
+
+    const price = ethers.utils.parseUnits(book.price.toString(), 'ether');
+
+    const transaction = await contract.createMarketSale(book.tokenId, { value: price });
+
+    await transaction.wait();
+  };
+
   return (
-    <BookContext.Provider value={{ currency, connectWallet, currentAccount, uploadToIPFS, createBook, fetchBooks, fetchMyBooksOrListedBooks }}>{children}</BookContext.Provider>
+    <BookContext.Provider value={{ currency, connectWallet, currentAccount, uploadToIPFS, createBook, fetchBooks, fetchMyBooksOrListedBooks, buyBook, createSale }}>{children}</BookContext.Provider>
   );
 };

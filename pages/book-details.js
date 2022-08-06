@@ -3,16 +3,50 @@ import Image from 'next/dist/client/image';
 
 import { useRouter } from 'next/dist/client/router';
 import { BookContext } from '../context/BookContext';
-import { BookCard, Loader, Button } from '../components';
+import { BookCard, Loader, Button,Modal } from '../components';
 import { shortenAddress } from '../utils/shortenAddress';
 import images from '../assets';
 
+const PaymentBodyCmp = ({ book, currency }) => (
+    <div className="flex flex-col">
+      <div className="flexBetween">
+        <p className="font-poppins dark:text-white text-book-black-1 font-semibold text-base minlg:text-xl">Item</p>
+        <p className="font-poppins dark:text-white text-book-black-1 font-semibold text-base minlg:text-xl">Subtotal</p>
+      </div>
+      <div className="flexBetweenStart my-5">
+        <div className="flex-1 flexStartCenter">
+          <div className="relative w-28 h-28">
+            <Image src={book.image || images[`book${book.i}`]} layout="fill" objectFit="cover" />
+          </div>
+          <div className="flexCenterStart flex-col ml-5">
+            <p className="font-poppins dark:text-white text-book-black-1 font-semibold text-sm minlg:text-xl">{shortenAddress(book.seller)}</p>
+            <p className="font-poppins dark:text-white text-book-black-1 text-sm minlg:text-xl font-normal">{book.name}</p>
+          </div>
+        </div>
+        <div>
+          <p className="font-poppins dark:text-white text-book-black-1 text-sm minlg:text-xl font-normal">{book.price} <span className="font-semibold">{currency}</span></p>
+        </div>
+      </div>
+      <div className="flexBetween mt-10">
+        <p className="font-poppins dark:text-white text-book-black-1 font-semibold text-base minlg:text-xl">Total</p>
+        <p className="font-poppins dark:text-white text-book-black-1 text-base minlg:text-xl font-normal">{book.price} <span className="font-semibold">{currency}</span></p>
+      </div>
+    </div>
+  );
+
 const BookDetails = () => {
-  const { currentAccount, currency } = useContext(BookContext);
+  const { currentAccount, currency, buyBook } = useContext(BookContext);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
   const [book, setBook] = useState({ image: '', tokenId: '', name: '', owner: '', price: '', seller: '' });
+  const [paymentModal, setPaymentModal] = useState(false);
+  const [successModal,setSuccessModal] = useState(false);
 
+  const checkout = async () => {
+    await buyBook(book);
+    setPaymentModal(false);
+    setSuccessModal(true);
+  }
   useEffect(() => {
     if (!router.isReady) return;
     setBook(router.query);
@@ -72,14 +106,59 @@ const BookDetails = () => {
               )
               : (
                 <Button
-                  btnName={`Buy for ${book.price} ${bookCurrency}`}
+                  btnName={`Buy for ${book.price} ${currency}`}
                   btnType="primary"
                   classStyles="mr-5 sm:mr-0 sm:mb-5 rounded-xl"
-                  handleClick={() => { }}
+                  handleClick={() => { setPaymentModal(true); }}
                 />
               )}
         </div>
       </div>
+      {paymentModal && (
+      <Modal
+        header="Check Out"
+        body={<PaymentBodyCmp book={book} bookCurrency={currency} />}
+        footer={(
+          <div className="flex flex-row sm:flex-col ">
+            <Button
+              btnName="Checkout"
+              classStyles="mr-5 sm:mr-0 rounded-xl"
+              handleClick={checkout}
+            />
+            <Button
+              btnName="Cancel"
+              classStyles="rounded-xl"
+              handleClick={() => { setPaymentModal(false); }}
+            />
+          </div>
+        )}
+        handleClose={() => { setPaymentModal(false); }}
+      />
+      )}
+      { successModal
+      && (
+      <Modal
+        header="Payment Successful"
+        body={(
+          <div className="flexCenter flex-col text-center" onClick={() => setSuccessModal(false)}>
+            <div className="relative w-52 h-52">
+              <Image src={book.image || images[`book${book.i}`]} objectFit="cover" layout="fill" />
+            </div>
+            <p className="font-poppins dark:text-white text-book-black-1 text-sm minlg:text-xl font-normal mt-10"> You successfully purchased <span className="font-semibold">{book.name}</span> from <span className="font-semibold">{shortenAddress(book.seller)}</span>.</p>
+          </div>
+          )}
+        footer={(
+          <div className="flexCentre flex-col ">
+            <Button
+              btnName="Check it out"
+              classStyles="sm:mb-5 sm:mr-0 rounded-xl"
+              handleClick={() => { router.push('/my-books'); }}
+            />
+          </div>
+        )}
+        handleClose={() => { setSuccessModal(false); }}
+      />
+      )}
     </div>
   );
 };

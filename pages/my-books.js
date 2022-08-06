@@ -11,6 +11,15 @@ const MyBooks = () => {
   const [books, setBooks] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
+  useEffect(() => {
+    fetchMyBooksOrListedBooks()
+      .then((items) => {
+        setBooks(items);
+        setIsLoading(false);
+        console.log(items);
+      });
+  },[]);
+
   if (isLoading) {
     return (
       <div className="flexStart min-h-screen">
