@@ -38,7 +38,7 @@ const BookDetails = () => {
   const { currentAccount, currency, buyBook } = useContext(BookContext);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
-  const [book, setBook] = useState({ image: '', tokenId: '', name: '', owner: '', price: '', seller: '' });
+  const [book, setBook] = useState({ image: '', pdf: '', tokenId: '', name: '', owner: '', price: '', seller: '' });
   const [paymentModal, setPaymentModal] = useState(false);
   const [successModal,setSuccessModal] = useState(false);
 
@@ -49,6 +49,7 @@ const BookDetails = () => {
   }
   useEffect(() => {
     if (!router.isReady) return;
+    console.log(router.query);
     setBook(router.query);
     setIsLoading(false);
   }, [router.isReady]);
@@ -97,12 +98,20 @@ const BookDetails = () => {
             )
             : currentAccount === book.owner.toLowerCase()
               ? (
-                <Button
-                  btnName="List on Marketplace"
-                  btnType="primary"
-                  classStyles="mr-5 sm:mr-0 sm:mb-5 rounded-xl"
-                  handleClick={() => router.push(`/resell-book?id=${book.tokenId}&tokenURI=${book.tokenURI}`)}
-                />
+                <>
+                  <Button
+                    btnName="List on Marketplace"
+                    btnType="primary"
+                    classStyles="mr-5 sm:mr-0 sm:mb-5 rounded-xl"
+                    handleClick={() => router.push(`/resell-book?id=${book.tokenId}&tokenURI=${book.tokenURI}`)}
+                  />
+                  <Button
+                      btnName="Read Book"
+                      btnType="primary"
+                      classStyles="mr-5 sm:mr-0 sm:mb-5 rounded-xl"
+                      handleClick={() => location.href = `${book.pdf}`}
+                    />
+                </>
               )
               : (
                 <Button

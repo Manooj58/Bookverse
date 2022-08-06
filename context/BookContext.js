@@ -51,11 +51,11 @@ export const BookProvider = ({ children }) => {
     }
   };
 
-  const createBook = async (formInput, fileUrl, router) => {
+  const createBook = async (formInput, fileUrl, pdfUrl, router) => {
     const { name, description, price } = formInput;
-    if (!name || !description || !price || !fileUrl) return;
+    if (!name || !description || !price || !fileUrl || !pdfUrl) return;
 
-    const data = JSON.stringify({ name, description, image: fileUrl });
+    const data = JSON.stringify({ name, description, image: fileUrl, pdf: pdfUrl });
     try {
       // upload entirity of data to ipfs
       const added = await client.add(data);
@@ -89,7 +89,7 @@ export const BookProvider = ({ children }) => {
     const items = await Promise.all(data.map(async ({ tokenId, seller, owner, price: unformattedPrice }) => {
       const tokenURI = await contract.tokenURI(tokenId);
       const response = await axios.get(tokenURI);
-      const { data: { image, name, description } } = await axios.get(tokenURI);
+      const { data: { image, name, description, pdf } } = await axios.get(tokenURI);
       const price = ethers.utils.formatUnits(unformattedPrice.toString(), 'ether');
 
       return {
@@ -98,6 +98,7 @@ export const BookProvider = ({ children }) => {
         seller,
         owner,
         image,
+        pdf,
         name,
         description,
         tokenURI,
@@ -119,7 +120,7 @@ export const BookProvider = ({ children }) => {
 
     const items = await Promise.all(data.map(async ({ tokenId, seller, owner, price: unformattedPrice }) => {
       const tokenURI = await contract.tokenURI(tokenId);
-      const { data: { image, name, description } } = await axios.get(tokenURI);
+      const { data: { image, name, description, pdf } } = await axios.get(tokenURI);
       const price = ethers.utils.formatUnits(unformattedPrice.toString(), 'ether');
 
       return {
@@ -128,6 +129,7 @@ export const BookProvider = ({ children }) => {
         seller,
         owner,
         image,
+        pdf,
         name,
         description,
         tokenURI,

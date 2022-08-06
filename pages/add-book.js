@@ -10,6 +10,7 @@ import { BookContext } from '../context/BookContext';
 
 const AddBook = () => {
   const [fileUrl, setFileUrl] = useState(null);
+  const [pdfUrl, setpdfUrl] = useState(null);
   const [formInput, setFormInput] = useState({ price: '', name: '', description: '' });
   const { theme } = useTheme();
   const {uploadToIPFS,createBook} = useContext(BookContext);
@@ -19,12 +20,17 @@ const AddBook = () => {
     // upload image to the blockchain (ipfs)
     const url = await uploadToIPFS(acceptedFile[0]);
     console.log(url);
-    setFileUrl(url);
+
+    if (acceptedFile[0].type.match('image.*')) {
+      setFileUrl(url);
+    } else {
+      setpdfUrl(url);
+    }
   }, []);
 
   const { getRootProps, getInputProps, isDragActive, isDragAccept, isDragReject } = useDropzone({
     onDrop,
-    accept: 'image/*',
+    accept: 'image/*,.pdf',
     maxSize: 5000000,
   });
 
@@ -82,17 +88,17 @@ const AddBook = () => {
                 <p className="font-poppins dark:text-white text-book-black-1 font-semibold text-sm">or Browse media on your device </p> */}
               </div>
             </div>
-            {fileUrl && (
+            {pdfUrl && (
               <aside>
                 <div>
-                  <img src={fileUrl} alt="asset_file" />
+                  <img src={pdfUrl} alt="asset_file" />
                 </div>
               </aside>
             )}
           </div>
         </div>
         <div className="mt-7 w-full flex justify-end">
-          <Button btnName="Create Book" className="rounded-xl" handleClick={() => createBook(formInput,fileUrl,router)} />
+          <Button btnName="Create Book" className="rounded-xl" handleClick={() => createBook(formInput,fileUrl,pdfUrl, router)} />
         </div>
       </div>
     </div>

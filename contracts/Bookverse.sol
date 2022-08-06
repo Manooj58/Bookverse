@@ -13,12 +13,12 @@ contract Bookverse is ERC721URIStorage {
     Counters.Counter private _tokenIds;    
     Counters.Counter private _itemsSold;
 
-    uint256 listingPrice = 0.025 ether; // every time a user list or post a nft. The owner of that marketplace is going to get 0.025 ether deposited to his wallet. This can also be in Matic depending upon the network it is deployed in
+    uint256 listingPrice = 0.025 ether; // every time a user list or post a book. The owner of that marketplace is going to get 0.025 ether deposited to his wallet. This can also be in Matic depending upon the network it is deployed in
     // Then we have to declare the owner of the contract. The owner will earn a commision when every item sold.
 
     address payable owner;
 
-    // we need to able to keep up all the NFT's that have been created
+    // we need to able to keep up all the book's that have been created
     mapping(uint256 => MarketItem) private idToMarketItem; // is we create a new MarketItem and pass an id we need to fetch the items using the id
 
     struct MarketItem {
@@ -39,7 +39,7 @@ contract Bookverse is ERC721URIStorage {
     );
 
     constructor() ERC721("Metaverse Tokens", "METT"){
-        owner = payable(msg.sender); // this line mean owner is the one who is deploying. Message is the actual transaction that is happening when we are deploying the contract. And he or she will get the listing price when somebody sells the nft
+        owner = payable(msg.sender); // this line mean owner is the one who is deploying. Message is the actual transaction that is happening when we are deploying the contract. And he or she will get the listing price when somebody sells the book
     }
 
     // this function will help the owner to update the listing price
@@ -54,13 +54,13 @@ contract Bookverse is ERC721URIStorage {
         return listingPrice;
     }
 
-    function createToken(string memory tokenURI, uint256 price) public payable returns(uint){  //upload a nft and gets it's tokenURI
+    function createToken(string memory tokenURI, uint256 price) public payable returns(uint){  //upload a book and gets it's tokenURI
         _tokenIds.increment(); // we are creating a new token so need to update the token id by one
 
         uint256 newTokenId = _tokenIds.current(); 
 
         // now we need to mint the token
-        _mint(msg.sender,newTokenId); // this is a utility function that allows us to mint or create a nft
+        _mint(msg.sender,newTokenId); // this is a utility function that allows us to mint or create a book
         _setTokenURI(newTokenId, tokenURI);
 
         createMarketItem(newTokenId,price);
@@ -80,7 +80,7 @@ contract Bookverse is ERC721URIStorage {
             false // to signify it is not yet sold
         );
 
-        // transfer the ownership of the nft to the contract
+        // transfer the ownership of the book to the contract
         _transfer(msg.sender, address(this), tokenId); //meaning the address of this current contract
 
         emit MarketItemCreated(tokenId,msg.sender,address(this),price,false);
@@ -109,7 +109,7 @@ contract Bookverse is ERC721URIStorage {
       idToMarketItem[tokenId].seller = payable(address(0));
       _itemsSold.increment();
       
-      // next, we want to transfer the NFT ownership from the seller to the buyer
+      // next, we want to transfer the book ownership from the seller to the buyer
       _transfer(address(this), msg.sender, tokenId);
       payable(owner).transfer(listingPrice);
       payable(idToMarketItem[tokenId].seller).transfer(msg.value);
@@ -142,7 +142,7 @@ contract Bookverse is ERC721URIStorage {
 
       // gives us the number of items that we own
       for (uint i = 0; i < totalItemCount; i++) {
-        // check if nft is mine
+        // check if book is mine
         if (idToMarketItem[i + 1].owner == msg.sender) {
           itemCount += 1;
         }
@@ -150,7 +150,7 @@ contract Bookverse is ERC721URIStorage {
 
       MarketItem[] memory items = new MarketItem[](itemCount);
       for (uint i = 0; i < totalItemCount; i++) {
-        // check if nft is mine
+        // check if book is mine
         if (idToMarketItem[i + 1].owner == msg.sender) {
           // get the id of the market item
           uint currentId = i + 1;
