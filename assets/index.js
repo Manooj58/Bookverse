@@ -27,6 +27,7 @@ import creator9 from './creator9.png';
 import creator10 from './creator10.jpg';
 import left from './left.png';
 import right from './right.png';
+import loader from './loader.gif';
 
 export default {
   logoMain,
@@ -57,5 +58,6 @@ export default {
   creator9,
   creator10,
   left,
-  right
+  right,
+  loader
 };

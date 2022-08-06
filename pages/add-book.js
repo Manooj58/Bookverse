@@ -6,14 +6,22 @@ import { useTheme } from 'next-themes';
 
 import { Button, Input } from '../components';
 import images from '../assets';
+import { BookContext } from '../context/BookContext';
 
 const AddBook = () => {
   const [fileUrl, setFileUrl] = useState(null);
   const [formInput, setFormInput] = useState({ price: '', name: '', description: '' });
   const { theme } = useTheme();
-  const onDrop = useCallback(() => {
+  const {uploadToIPFS,createBook} = useContext(BookContext);
+  const router = useRouter();
+
+  const onDrop = useCallback(async (acceptedFile) => {
     // upload image to the blockchain (ipfs)
+    const url = await uploadToIPFS(acceptedFile[0]);
+    console.log(url);
+    setFileUrl(url);
   }, []);
+
   const { getRootProps, getInputProps, isDragActive, isDragAccept, isDragReject } = useDropzone({
     onDrop,
     accept: 'image/*',
@@ -84,7 +92,7 @@ const AddBook = () => {
           </div>
         </div>
         <div className="mt-7 w-full flex justify-end">
-          <Button btnName="Create Book" className="rounded-xl" handleClick={() => {}} />
+          <Button btnName="Create Book" className="rounded-xl" handleClick={() => createBook(formInput,fileUrl,router)} />
         </div>
       </div>
     </div>
