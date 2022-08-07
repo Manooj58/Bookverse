@@ -72,7 +72,7 @@ const MyBooks = () => {
     <div className="w-full flex justify-start items-center flex-col min-h-screen">
       <div className="w-full flexCenter flex-col">
         <Banner
-          banner="Heading Here"
+          banner="My Books"
           childStyles="text-center mb-4"
           parentStyles="h-80 justify-center"
         />

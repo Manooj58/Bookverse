@@ -5,6 +5,14 @@
 
 Bookverse is a project based on blockchain technology more specifically, is a opensea clone but for the book author. In our site, an author can shortlist any of their books for sale at the desired amount of ether and allows any other user exploring the website to buy them. The latest buyer who has ownership of the book is only able to read it. After reading if they want to, they can resell on the site.
 
+
+
+## Features
+
+- Use of IPFS for the storage of pdfs and book covers.
+- The owner of this site i.e whole bookverse platform, gets commission on each transaction done by users on the site.
+
+
 ## Run Locally
 
 Clone the project
@@ -24,13 +32,13 @@ Install dependencies present in [package.json](https://github.com/Manooj58/Bookv
 ```bash
   npm install
 ```
-Now, run the hardhat network for conneting the wallet run
+Now, run the hardhat local network for conneting the wallet
 
 ```bash
   npx hardhat node
 ```
 
-Deploy the smart contract by running
+Deploy the smart contract locally by running
 
 ```bash
   npx hardhat run scripts/deploy.js --network localhost
@@ -40,3 +48,10 @@ Finally, you can start the next.js server
 ```bash
   npm run dev
 ```
+
+
+## Tech Stack
+
+Solidity, Next JS, React, Tailwind, JSX, Ethereum, Hardhat, IPFS
+
+
